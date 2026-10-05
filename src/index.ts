@@ -4,35 +4,38 @@ import { cors } from 'hono/cors'
 
 const app = new Hono()
 
-app.use(
-  '/rubyboy.wasm',
-  cors({
-    origin: '*',
-    allowHeaders: [],
-    allowMethods: ['GET'],
-    exposeHeaders: [],
-    maxAge: 600,
-    credentials: false,
-  })
-)
+for (const filename of ['rubyboy.wasm', 'rubyboy-spinel.wasm']) {
+  const path = `/${filename}`
 
-app.get('/rubyboy.wasm',
-  cache({
-    cacheName: 'rubyboy',
-    cacheControl: 'public, max-age=14400'
-  }),
-  async (_c) => {
-    const response = await fetch('https://github.com/sacckey/rubyboy/releases/latest/download/rubyboy.wasm')
-
-    // Clone the response to return a response with modifiable headers
-    const newResponse = new Response(response.body, {
-      headers: {
-        'Content-Type': 'application/wasm',
-      }
+  app.use(
+    path,
+    cors({
+      origin: '*',
+      allowHeaders: [],
+      allowMethods: ['GET'],
+      exposeHeaders: [],
+      maxAge: 600,
+      credentials: false,
     })
+  )
 
-    return newResponse
-  }
-)
+  app.get(path,
+    cache({
+      cacheName: 'rubyboy',
+      cacheControl: 'public, max-age=14400'
+    }),
+    async (_c) => {
+      const response = await fetch(`https://github.com/sacckey/rubyboy/releases/latest/download/${filename}`)
+
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: {
+          'Content-Type': 'application/wasm',
+        }
+      })
+    }
+  )
+}
 
 export default app

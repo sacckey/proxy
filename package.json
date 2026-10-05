@@ -2,13 +2,23 @@
   "name": "proxy",
   "scripts": {
     "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "deploy": "wrangler deploy --minify src/index.ts",
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "wrangler deploy --dry-run --minify --outdir dist src/index.ts"
   },
   "dependencies": {
-    "hono": "^4.4.13"
+    "hono": "4.13.13"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240529.0",
-    "wrangler": "^3.57.2"
+    "@cloudflare/workers-types": "5.20261005.1",
+    "typescript": "7.0.2",
+    "wrangler": "4.147.0"
+  },
+  "type": "module",
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": "24.21.0",
+    "pnpm": "12.9.1"
   }
 }
